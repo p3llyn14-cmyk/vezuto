@@ -17,14 +17,16 @@ export async function SiteHeader() {
           />
           {dict.brand.name}
         </Link>
-        <nav className="text-muted-foreground hidden items-center gap-6 text-sm sm:flex">
-          <Link href="#jak-to-funguje" className="hover:text-foreground">
-            {dict.nav.howItWorks}
-          </Link>
-          <Link href="#pro-ridice" className="hover:text-foreground">
-            {dict.nav.forDrivers}
-          </Link>
-        </nav>
+        {!profile && (
+          <nav className="text-muted-foreground hidden items-center gap-6 text-sm sm:flex">
+            <Link href="/#jak-to-funguje" className="hover:text-foreground">
+              {dict.nav.howItWorks}
+            </Link>
+            <Link href="/#pro-ridice" className="hover:text-foreground">
+              {dict.nav.forDrivers}
+            </Link>
+          </nav>
+        )}
         <div className="flex items-center gap-2">
           {profile ? (
             <>

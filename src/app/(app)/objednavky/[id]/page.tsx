@@ -16,6 +16,7 @@ import {
   getOrderWithLocations,
   getParticipantNames,
 } from "@/modules/orders/queries";
+import { getOrderStatusBadgeVariant } from "@/modules/orders/status-badge";
 import { PayButton } from "@/modules/payments/components/pay-button";
 import { CustomerDeliverySection } from "@/modules/reviews/components/customer-delivery-section";
 import { getRatingForOrder } from "@/modules/reviews/queries";
@@ -74,7 +75,7 @@ export default async function OrderDetailPage({
               {order.public_code}
             </p>
           </div>
-          <Badge variant="secondary">
+          <Badge variant={getOrderStatusBadgeVariant(order.status)}>
             {dict.orders.statusLabels[order.status] ?? order.status}
           </Badge>
         </CardHeader>

@@ -7,6 +7,7 @@ import { getDictionary } from "@/i18n";
 import { formatCzk, formatDate } from "@/lib/format";
 import { requireCustomerProfile } from "@/modules/auth/queries";
 import { listCustomerOrders } from "@/modules/orders/queries";
+import { getOrderStatusBadgeVariant } from "@/modules/orders/status-badge";
 
 export const metadata: Metadata = { title: "Moje objednávky — VezuTo" };
 
@@ -47,7 +48,7 @@ export default async function OrdersListPage() {
                       {order.public_code} · {formatDate(order.created_at)}
                     </p>
                   </div>
-                  <Badge variant="secondary">
+                  <Badge variant={getOrderStatusBadgeVariant(order.status)}>
                     {dict.orders.statusLabels[order.status] ?? order.status}
                   </Badge>
                 </CardHeader>

@@ -6,6 +6,7 @@ import { getDictionary } from "@/i18n";
 import { formatCzk, formatDate } from "@/lib/format";
 import { requireDriverProfile } from "@/modules/auth/queries";
 import { listAvailableJobs, listDriverOrders } from "@/modules/drivers/queries";
+import { getOrderStatusBadgeVariant } from "@/modules/orders/status-badge";
 
 export const metadata: Metadata = { title: "Zakázky — VezuTo" };
 
@@ -39,7 +40,7 @@ export default async function JobsPage() {
                 <Card className="hover:border-primary/40 transition-colors">
                   <CardHeader className="flex-row items-start justify-between space-y-0">
                     <CardTitle className="text-base">{order.item_title}</CardTitle>
-                    <Badge variant="secondary">
+                    <Badge variant={getOrderStatusBadgeVariant(order.status)}>
                       {dict.orders.statusLabels[order.status] ?? order.status}
                     </Badge>
                   </CardHeader>

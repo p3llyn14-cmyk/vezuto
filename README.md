@@ -23,6 +23,16 @@ Vyvíjí se postupně po fázích. Aktuální stav:
 - **Zod** pro validaci
 - **Supabase** (Postgres, Auth, Storage, Row Level Security)
 - **Vitest** (unit testy), **Playwright** (e2e testy)
+- **Stripe** (platby — Checkout, refundace)
+- **PWA** — instalovatelná aplikace (manifest, ikony, service worker pro offline shell)
+
+## Design
+
+Vizuální styl inspirovaný Bolt/Vinted — plná teal barevná paleta (`--primary`/`--accent` v `globals.css`), zaoblenější rohy (`--radius: 1rem`), barevné odznaky podle naléhavosti stavu objednávky (`src/modules/orders/status-badge.ts`: aktivní = plná barva, hotovo = neutrální, zrušeno = červená). Na mobilu (`sm:` breakpoint a níž) je spodní navigační lišta (`src/components/bottom-nav.tsx`) místo horního menu — vzor převzatý z Bolt/Vinted aplikací. Zákaznické/řidičské stránky (`/ucet`, `/objednavky/*`, `/zakazky/*`) sdílejí layout v `src/app/(app)/layout.tsx`, který teď poprvé zajišťuje konzistentní hlavičku a navigaci na všech těchto stránkách (dřív ji měla jen domovská stránka).
+
+## PWA (instalovatelná aplikace)
+
+`public/manifest.json` + `public/icons/` + `public/sw.js`, registrovaný v `src/components/register-service-worker.tsx`. Service worker je záměrně minimální — aplikace je z drtivé většiny dynamická (stavy objednávek, chat, přihlášení), takže cache slouží jen jako offline záloha pro app shell (síť má vždy přednost), ne jako náhrada živých dat. Na Androidu/desktopu se v prohlížeči zobrazí nabídka "Nainstalovat aplikaci"; na iOS lze přidat přes Safari → Sdílet → Přidat na plochu.
 
 ## Požadavky
 
