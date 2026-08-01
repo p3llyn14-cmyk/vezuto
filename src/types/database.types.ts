@@ -1,558 +1,1059 @@
-/**
- * Hand-written to mirror supabase/migrations exactly, in the shape
- * `supabase gen types typescript` would produce. Regenerate with the real
- * CLI once a Supabase project (local via Docker, or cloud) exists —
- * `supabase gen types typescript --db-url <url> --schema public` — and
- * this file becomes redundant. Docker isn't available in this environment,
- * so the CLI couldn't be used to generate it (see Fáze 3 notes in README).
- */
-
 export type Json =
   string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
-export type UserRole = "customer" | "driver" | "admin";
-export type AccountStatus = "active" | "suspended" | "deleted";
-export type VerificationStatus = "unverified" | "pending" | "verified" | "rejected";
-export type VehicleType = "personal_car" | "estate_car" | "small_van" | "large_van";
-export type AssistanceLevel =
-  "driver_only" | "driver_helps" | "driver_plus_one" | "driver_plus_two";
-export type ItemCategory =
-  | "sofa"
-  | "bed"
-  | "wardrobe"
-  | "table"
-  | "chair"
-  | "appliance"
-  | "electronics"
-  | "sports_equipment"
-  | "office_equipment"
-  | "boxes"
-  | "other";
-export type OrderStatus =
-  | "draft"
-  | "submitted"
-  | "awaiting_driver"
-  | "driver_assigned"
-  | "driver_on_the_way"
-  | "arrived_at_pickup"
-  | "item_picked_up"
-  | "in_transit"
-  | "arrived_at_destination"
-  | "delivered"
-  | "completed"
-  | "cancelled_by_customer"
-  | "cancelled_by_driver"
-  | "cancelled_by_admin"
-  | "disputed";
-export type LocationType = "pickup" | "destination";
-export type ImageType =
-  | "item_reference"
-  | "pickup_condition"
-  | "damage"
-  | "delivery_condition"
-  | "proof_of_delivery";
-export type DocumentType =
-  "id_card" | "drivers_license" | "vehicle_registration" | "business_license" | "other";
-export type PaymentStatus = "pending" | "paid" | "failed" | "refunded";
-export type PayoutStatus = "pending" | "paid" | "held" | "failed";
-
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.15";
+  };
   public: {
     Tables: {
-      profiles: {
+      audit_logs: {
         Row: {
-          id: string;
-          auth_user_id: string;
-          role: UserRole;
-          first_name: string;
-          last_name: string;
-          email: string;
-          phone: string | null;
-          avatar_url: string | null;
-          preferred_language: string;
-          account_status: AccountStatus;
-          is_business: boolean;
-          company_name: string | null;
+          action: string;
+          actor_profile_id: string | null;
           created_at: string;
-          updated_at: string;
+          entity_id: string | null;
+          entity_type: string;
+          id: string;
+          metadata: Json | null;
         };
         Insert: {
-          id?: string;
-          auth_user_id: string;
-          role?: UserRole;
-          first_name: string;
-          last_name: string;
-          email: string;
-          phone?: string | null;
-          avatar_url?: string | null;
-          preferred_language?: string;
-          account_status?: AccountStatus;
-          is_business?: boolean;
-          company_name?: string | null;
+          action: string;
+          actor_profile_id?: string | null;
           created_at?: string;
-          updated_at?: string;
-        };
-        Update: Partial<Database["public"]["Tables"]["profiles"]["Insert"]>;
-        Relationships: [];
-      };
-      driver_profiles: {
-        Row: {
-          id: string;
-          profile_id: string;
-          verification_status: VerificationStatus;
-          business_name: string | null;
-          company_id: string | null;
-          tax_id: string | null;
-          service_radius_km: number;
-          home_latitude: number | null;
-          home_longitude: number | null;
-          average_rating: number | null;
-          completed_jobs_count: number;
-          is_available: boolean;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
+          entity_id?: string | null;
+          entity_type: string;
           id?: string;
-          profile_id: string;
-          verification_status?: VerificationStatus;
-          business_name?: string | null;
-          company_id?: string | null;
-          tax_id?: string | null;
-          service_radius_km?: number;
-          home_latitude?: number | null;
-          home_longitude?: number | null;
-          average_rating?: number | null;
-          completed_jobs_count?: number;
-          is_available?: boolean;
+          metadata?: Json | null;
+        };
+        Update: {
+          action?: string;
+          actor_profile_id?: string | null;
           created_at?: string;
-          updated_at?: string;
-        };
-        Update: Partial<Database["public"]["Tables"]["driver_profiles"]["Insert"]>;
-        Relationships: [];
-      };
-      vehicles: {
-        Row: {
-          id: string;
-          driver_profile_id: string;
-          vehicle_type: VehicleType;
-          brand: string;
-          model: string;
-          registration_number: string;
-          cargo_length_cm: number | null;
-          cargo_width_cm: number | null;
-          cargo_height_cm: number | null;
-          max_payload_kg: number | null;
-          active: boolean;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
+          entity_id?: string | null;
+          entity_type?: string;
           id?: string;
-          driver_profile_id: string;
-          vehicle_type: VehicleType;
-          brand: string;
-          model: string;
-          registration_number: string;
-          cargo_length_cm?: number | null;
-          cargo_width_cm?: number | null;
-          cargo_height_cm?: number | null;
-          max_payload_kg?: number | null;
-          active?: boolean;
-          created_at?: string;
-          updated_at?: string;
+          metadata?: Json | null;
         };
-        Update: Partial<Database["public"]["Tables"]["vehicles"]["Insert"]>;
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "audit_logs_actor_profile_id_fkey";
+            columns: ["actor_profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       driver_documents: {
         Row: {
-          id: string;
-          driver_profile_id: string;
-          document_type: DocumentType;
-          storage_path: string;
-          verification_status: VerificationStatus;
-          expires_at: string | null;
-          reviewed_by: string | null;
-          reviewed_at: string | null;
           created_at: string;
+          document_type: Database["public"]["Enums"]["document_type"];
+          driver_profile_id: string;
+          expires_at: string | null;
+          id: string;
+          reviewed_at: string | null;
+          reviewed_by: string | null;
+          storage_path: string;
+          verification_status: Database["public"]["Enums"]["verification_status"];
         };
         Insert: {
-          id?: string;
-          driver_profile_id: string;
-          document_type: DocumentType;
-          storage_path: string;
-          verification_status?: VerificationStatus;
-          expires_at?: string | null;
-          reviewed_by?: string | null;
-          reviewed_at?: string | null;
           created_at?: string;
+          document_type: Database["public"]["Enums"]["document_type"];
+          driver_profile_id: string;
+          expires_at?: string | null;
+          id?: string;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          storage_path: string;
+          verification_status?: Database["public"]["Enums"]["verification_status"];
         };
-        Update: Partial<Database["public"]["Tables"]["driver_documents"]["Insert"]>;
+        Update: {
+          created_at?: string;
+          document_type?: Database["public"]["Enums"]["document_type"];
+          driver_profile_id?: string;
+          expires_at?: string | null;
+          id?: string;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          storage_path?: string;
+          verification_status?: Database["public"]["Enums"]["verification_status"];
+        };
+        Relationships: [
+          {
+            foreignKeyName: "driver_documents_driver_profile_id_fkey";
+            columns: ["driver_profile_id"];
+            isOneToOne: false;
+            referencedRelation: "driver_profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "driver_documents_reviewed_by_fkey";
+            columns: ["reviewed_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      driver_profiles: {
+        Row: {
+          average_rating: number | null;
+          business_name: string | null;
+          company_id: string | null;
+          completed_jobs_count: number;
+          created_at: string;
+          home_latitude: number | null;
+          home_longitude: number | null;
+          id: string;
+          is_available: boolean;
+          profile_id: string;
+          service_radius_km: number;
+          tax_id: string | null;
+          updated_at: string;
+          verification_status: Database["public"]["Enums"]["verification_status"];
+        };
+        Insert: {
+          average_rating?: number | null;
+          business_name?: string | null;
+          company_id?: string | null;
+          completed_jobs_count?: number;
+          created_at?: string;
+          home_latitude?: number | null;
+          home_longitude?: number | null;
+          id?: string;
+          is_available?: boolean;
+          profile_id: string;
+          service_radius_km?: number;
+          tax_id?: string | null;
+          updated_at?: string;
+          verification_status?: Database["public"]["Enums"]["verification_status"];
+        };
+        Update: {
+          average_rating?: number | null;
+          business_name?: string | null;
+          company_id?: string | null;
+          completed_jobs_count?: number;
+          created_at?: string;
+          home_latitude?: number | null;
+          home_longitude?: number | null;
+          id?: string;
+          is_available?: boolean;
+          profile_id?: string;
+          service_radius_km?: number;
+          tax_id?: string | null;
+          updated_at?: string;
+          verification_status?: Database["public"]["Enums"]["verification_status"];
+        };
+        Relationships: [
+          {
+            foreignKeyName: "driver_profiles_profile_id_fkey";
+            columns: ["profile_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      messages: {
+        Row: {
+          content: string;
+          created_at: string;
+          id: string;
+          message_type: string;
+          order_id: string;
+          sender_profile_id: string;
+        };
+        Insert: {
+          content: string;
+          created_at?: string;
+          id?: string;
+          message_type?: string;
+          order_id: string;
+          sender_profile_id: string;
+        };
+        Update: {
+          content?: string;
+          created_at?: string;
+          id?: string;
+          message_type?: string;
+          order_id?: string;
+          sender_profile_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "messages_order_id_fkey";
+            columns: ["order_id"];
+            isOneToOne: false;
+            referencedRelation: "orders";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "messages_sender_profile_id_fkey";
+            columns: ["sender_profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      order_images: {
+        Row: {
+          created_at: string;
+          id: string;
+          image_type: Database["public"]["Enums"]["image_type"];
+          order_id: string;
+          storage_path: string;
+          uploaded_by_profile_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          image_type: Database["public"]["Enums"]["image_type"];
+          order_id: string;
+          storage_path: string;
+          uploaded_by_profile_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          image_type?: Database["public"]["Enums"]["image_type"];
+          order_id?: string;
+          storage_path?: string;
+          uploaded_by_profile_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "order_images_order_id_fkey";
+            columns: ["order_id"];
+            isOneToOne: false;
+            referencedRelation: "orders";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "order_images_uploaded_by_profile_id_fkey";
+            columns: ["uploaded_by_profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      order_locations: {
+        Row: {
+          contact_name: string;
+          contact_phone: string;
+          created_at: string;
+          floor: number | null;
+          full_address: string;
+          has_elevator: boolean | null;
+          id: string;
+          latitude: number | null;
+          location_type: Database["public"]["Enums"]["location_type"];
+          longitude: number | null;
+          notes: string | null;
+          order_id: string;
+          parking_notes: string | null;
+        };
+        Insert: {
+          contact_name: string;
+          contact_phone: string;
+          created_at?: string;
+          floor?: number | null;
+          full_address: string;
+          has_elevator?: boolean | null;
+          id?: string;
+          latitude?: number | null;
+          location_type: Database["public"]["Enums"]["location_type"];
+          longitude?: number | null;
+          notes?: string | null;
+          order_id: string;
+          parking_notes?: string | null;
+        };
+        Update: {
+          contact_name?: string;
+          contact_phone?: string;
+          created_at?: string;
+          floor?: number | null;
+          full_address?: string;
+          has_elevator?: boolean | null;
+          id?: string;
+          latitude?: number | null;
+          location_type?: Database["public"]["Enums"]["location_type"];
+          longitude?: number | null;
+          notes?: string | null;
+          order_id?: string;
+          parking_notes?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "order_locations_order_id_fkey";
+            columns: ["order_id"];
+            isOneToOne: false;
+            referencedRelation: "orders";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      order_status_history: {
+        Row: {
+          changed_by_profile_id: string | null;
+          created_at: string;
+          id: string;
+          new_status: Database["public"]["Enums"]["order_status"];
+          note: string | null;
+          order_id: string;
+          previous_status: Database["public"]["Enums"]["order_status"] | null;
+        };
+        Insert: {
+          changed_by_profile_id?: string | null;
+          created_at?: string;
+          id?: string;
+          new_status: Database["public"]["Enums"]["order_status"];
+          note?: string | null;
+          order_id: string;
+          previous_status?: Database["public"]["Enums"]["order_status"] | null;
+        };
+        Update: {
+          changed_by_profile_id?: string | null;
+          created_at?: string;
+          id?: string;
+          new_status?: Database["public"]["Enums"]["order_status"];
+          note?: string | null;
+          order_id?: string;
+          previous_status?: Database["public"]["Enums"]["order_status"] | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "order_status_history_changed_by_profile_id_fkey";
+            columns: ["changed_by_profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "order_status_history_order_id_fkey";
+            columns: ["order_id"];
+            isOneToOne: false;
+            referencedRelation: "orders";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      order_status_transitions: {
+        Row: {
+          from_status: Database["public"]["Enums"]["order_status"];
+          to_status: Database["public"]["Enums"]["order_status"];
+        };
+        Insert: {
+          from_status: Database["public"]["Enums"]["order_status"];
+          to_status: Database["public"]["Enums"]["order_status"];
+        };
+        Update: {
+          from_status?: Database["public"]["Enums"]["order_status"];
+          to_status?: Database["public"]["Enums"]["order_status"];
+        };
         Relationships: [];
       };
       orders: {
         Row: {
-          id: string;
-          public_code: string;
-          customer_profile_id: string;
-          assigned_driver_profile_id: string | null;
-          status: OrderStatus;
-          item_title: string;
-          item_category: ItemCategory;
-          item_description: string | null;
-          external_listing_url: string | null;
-          item_count: number;
-          estimated_weight_kg: number | null;
-          length_cm: number | null;
-          width_cm: number | null;
-          height_cm: number | null;
-          requested_vehicle_type: VehicleType | null;
-          assistance_level: AssistanceLevel;
-          disassembly_required: boolean;
           assembly_required: boolean;
+          assigned_driver_profile_id: string | null;
+          assistance_level: Database["public"]["Enums"]["assistance_level"];
+          cancellation_reason: string | null;
+          completed_at: string | null;
+          created_at: string;
+          customer_price_czk: number | null;
+          customer_profile_id: string;
+          disassembly_required: boolean;
+          dispute_reason: string | null;
+          driver_payout_czk: number | null;
+          estimated_weight_kg: number | null;
+          external_listing_url: string | null;
+          height_cm: number | null;
+          id: string;
+          is_flexible: boolean;
+          item_category: Database["public"]["Enums"]["item_category"];
+          item_count: number;
+          item_description: string | null;
+          item_title: string;
+          length_cm: number | null;
+          payment_status: Database["public"]["Enums"]["payment_status"];
+          payout_status: Database["public"]["Enums"]["payout_status"];
+          platform_fee_czk: number | null;
+          pricing_breakdown: Json | null;
+          public_code: string;
           requested_date: string | null;
           requested_time_from: string | null;
           requested_time_to: string | null;
-          is_flexible: boolean;
-          customer_price_czk: number | null;
-          driver_payout_czk: number | null;
-          platform_fee_czk: number | null;
-          pricing_breakdown: Json | null;
-          payment_status: PaymentStatus;
-          payout_status: PayoutStatus;
-          cancellation_reason: string | null;
-          dispute_reason: string | null;
-          created_at: string;
+          requested_vehicle_type: Database["public"]["Enums"]["vehicle_type"] | null;
+          status: Database["public"]["Enums"]["order_status"];
           updated_at: string;
-          completed_at: string | null;
+          width_cm: number | null;
         };
         Insert: {
-          id?: string;
-          public_code?: string;
-          customer_profile_id: string;
-          assigned_driver_profile_id?: string | null;
-          status?: OrderStatus;
-          item_title: string;
-          item_category: ItemCategory;
-          item_description?: string | null;
-          external_listing_url?: string | null;
-          item_count?: number;
-          estimated_weight_kg?: number | null;
-          length_cm?: number | null;
-          width_cm?: number | null;
-          height_cm?: number | null;
-          requested_vehicle_type?: VehicleType | null;
-          assistance_level?: AssistanceLevel;
-          disassembly_required?: boolean;
           assembly_required?: boolean;
+          assigned_driver_profile_id?: string | null;
+          assistance_level?: Database["public"]["Enums"]["assistance_level"];
+          cancellation_reason?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
+          customer_price_czk?: number | null;
+          customer_profile_id: string;
+          disassembly_required?: boolean;
+          dispute_reason?: string | null;
+          driver_payout_czk?: number | null;
+          estimated_weight_kg?: number | null;
+          external_listing_url?: string | null;
+          height_cm?: number | null;
+          id?: string;
+          is_flexible?: boolean;
+          item_category: Database["public"]["Enums"]["item_category"];
+          item_count?: number;
+          item_description?: string | null;
+          item_title: string;
+          length_cm?: number | null;
+          payment_status?: Database["public"]["Enums"]["payment_status"];
+          payout_status?: Database["public"]["Enums"]["payout_status"];
+          platform_fee_czk?: number | null;
+          pricing_breakdown?: Json | null;
+          public_code?: string;
           requested_date?: string | null;
           requested_time_from?: string | null;
           requested_time_to?: string | null;
-          is_flexible?: boolean;
+          requested_vehicle_type?: Database["public"]["Enums"]["vehicle_type"] | null;
+          status?: Database["public"]["Enums"]["order_status"];
+          updated_at?: string;
+          width_cm?: number | null;
+        };
+        Update: {
+          assembly_required?: boolean;
+          assigned_driver_profile_id?: string | null;
+          assistance_level?: Database["public"]["Enums"]["assistance_level"];
+          cancellation_reason?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
           customer_price_czk?: number | null;
+          customer_profile_id?: string;
+          disassembly_required?: boolean;
+          dispute_reason?: string | null;
           driver_payout_czk?: number | null;
+          estimated_weight_kg?: number | null;
+          external_listing_url?: string | null;
+          height_cm?: number | null;
+          id?: string;
+          is_flexible?: boolean;
+          item_category?: Database["public"]["Enums"]["item_category"];
+          item_count?: number;
+          item_description?: string | null;
+          item_title?: string;
+          length_cm?: number | null;
+          payment_status?: Database["public"]["Enums"]["payment_status"];
+          payout_status?: Database["public"]["Enums"]["payout_status"];
           platform_fee_czk?: number | null;
           pricing_breakdown?: Json | null;
-          payment_status?: PaymentStatus;
-          payout_status?: PayoutStatus;
-          cancellation_reason?: string | null;
-          dispute_reason?: string | null;
-          created_at?: string;
+          public_code?: string;
+          requested_date?: string | null;
+          requested_time_from?: string | null;
+          requested_time_to?: string | null;
+          requested_vehicle_type?: Database["public"]["Enums"]["vehicle_type"] | null;
+          status?: Database["public"]["Enums"]["order_status"];
           updated_at?: string;
-          completed_at?: string | null;
+          width_cm?: number | null;
         };
-        Update: Partial<Database["public"]["Tables"]["orders"]["Insert"]>;
-        Relationships: [];
-      };
-      order_locations: {
-        Row: {
-          id: string;
-          order_id: string;
-          location_type: LocationType;
-          full_address: string;
-          latitude: number | null;
-          longitude: number | null;
-          floor: number | null;
-          has_elevator: boolean | null;
-          parking_notes: string | null;
-          contact_name: string;
-          contact_phone: string;
-          notes: string | null;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          order_id: string;
-          location_type: LocationType;
-          full_address: string;
-          latitude?: number | null;
-          longitude?: number | null;
-          floor?: number | null;
-          has_elevator?: boolean | null;
-          parking_notes?: string | null;
-          contact_name: string;
-          contact_phone: string;
-          notes?: string | null;
-          created_at?: string;
-        };
-        Update: Partial<Database["public"]["Tables"]["order_locations"]["Insert"]>;
-        Relationships: [];
-      };
-      order_images: {
-        Row: {
-          id: string;
-          order_id: string;
-          uploaded_by_profile_id: string;
-          image_type: ImageType;
-          storage_path: string;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          order_id: string;
-          uploaded_by_profile_id: string;
-          image_type: ImageType;
-          storage_path: string;
-          created_at?: string;
-        };
-        Update: Partial<Database["public"]["Tables"]["order_images"]["Insert"]>;
-        Relationships: [];
-      };
-      order_status_history: {
-        Row: {
-          id: string;
-          order_id: string;
-          previous_status: OrderStatus | null;
-          new_status: OrderStatus;
-          changed_by_profile_id: string | null;
-          note: string | null;
-          created_at: string;
-        };
-        Insert: never; // written only by the orders_log_status_change trigger
-        Update: never;
-        Relationships: [];
-      };
-      order_status_transitions: {
-        Row: {
-          from_status: OrderStatus;
-          to_status: OrderStatus;
-        };
-        Insert: never; // static config, managed by migrations only
-        Update: never;
-        Relationships: [];
-      };
-      messages: {
-        Row: {
-          id: string;
-          order_id: string;
-          sender_profile_id: string;
-          message_type: "text" | "system";
-          content: string;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          order_id: string;
-          sender_profile_id: string;
-          message_type?: "text" | "system";
-          content: string;
-          created_at?: string;
-        };
-        Update: never; // messages are immutable
-        Relationships: [];
-      };
-      ratings: {
-        Row: {
-          id: string;
-          order_id: string;
-          reviewer_profile_id: string;
-          reviewed_profile_id: string;
-          rating: number;
-          comment: string | null;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          order_id: string;
-          reviewer_profile_id: string;
-          reviewed_profile_id: string;
-          rating: number;
-          comment?: string | null;
-          created_at?: string;
-        };
-        Update: never;
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "orders_assigned_driver_profile_id_fkey";
+            columns: ["assigned_driver_profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "orders_customer_profile_id_fkey";
+            columns: ["customer_profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       payments: {
         Row: {
+          amount_czk: number;
+          created_at: string;
           id: string;
           order_id: string;
           provider: string;
           provider_payment_id: string | null;
-          amount_czk: number;
-          status: PaymentStatus;
-          created_at: string;
+          status: Database["public"]["Enums"]["payment_status"];
           updated_at: string;
         };
-        // No client-reachable INSERT/UPDATE policy (see rls migration) —
-        // writes only ever go through the service role. Still needs a real
-        // shape, not `never`, or it also blocks that one legitimate
-        // service-role writer (see modules/payments/actions.ts) — same bug
-        // class as audit_logs.Insert originally was.
         Insert: {
+          amount_czk: number;
+          created_at?: string;
           id?: string;
           order_id: string;
           provider?: string;
           provider_payment_id?: string | null;
-          amount_czk: number;
-          status?: PaymentStatus;
-          created_at?: string;
+          status?: Database["public"]["Enums"]["payment_status"];
           updated_at?: string;
         };
         Update: {
+          amount_czk?: number;
+          created_at?: string;
           id?: string;
           order_id?: string;
           provider?: string;
           provider_payment_id?: string | null;
-          amount_czk?: number;
-          status?: PaymentStatus;
-          created_at?: string;
+          status?: Database["public"]["Enums"]["payment_status"];
           updated_at?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "payments_order_id_fkey";
+            columns: ["order_id"];
+            isOneToOne: false;
+            referencedRelation: "orders";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       payouts: {
         Row: {
+          amount_czk: number;
+          created_at: string;
+          driver_profile_id: string;
           id: string;
           order_id: string;
-          driver_profile_id: string;
           provider_payout_id: string | null;
-          amount_czk: number;
-          status: PayoutStatus;
-          created_at: string;
+          status: Database["public"]["Enums"]["payout_status"];
           updated_at: string;
         };
-        // Same reasoning as payments.Insert/Update above.
         Insert: {
+          amount_czk: number;
+          created_at?: string;
+          driver_profile_id: string;
           id?: string;
           order_id: string;
-          driver_profile_id: string;
           provider_payout_id?: string | null;
-          amount_czk: number;
-          status?: PayoutStatus;
-          created_at?: string;
+          status?: Database["public"]["Enums"]["payout_status"];
           updated_at?: string;
         };
         Update: {
+          amount_czk?: number;
+          created_at?: string;
+          driver_profile_id?: string;
           id?: string;
           order_id?: string;
-          driver_profile_id?: string;
           provider_payout_id?: string | null;
-          amount_czk?: number;
-          status?: PayoutStatus;
+          status?: Database["public"]["Enums"]["payout_status"];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "payouts_driver_profile_id_fkey";
+            columns: ["driver_profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "payouts_order_id_fkey";
+            columns: ["order_id"];
+            isOneToOne: false;
+            referencedRelation: "orders";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      profiles: {
+        Row: {
+          account_status: Database["public"]["Enums"]["account_status"];
+          auth_user_id: string;
+          avatar_url: string | null;
+          company_name: string | null;
+          created_at: string;
+          email: string;
+          first_name: string;
+          id: string;
+          is_business: boolean;
+          last_name: string;
+          phone: string | null;
+          preferred_language: string;
+          role: Database["public"]["Enums"]["user_role"];
+          updated_at: string;
+        };
+        Insert: {
+          account_status?: Database["public"]["Enums"]["account_status"];
+          auth_user_id: string;
+          avatar_url?: string | null;
+          company_name?: string | null;
           created_at?: string;
+          email: string;
+          first_name: string;
+          id?: string;
+          is_business?: boolean;
+          last_name: string;
+          phone?: string | null;
+          preferred_language?: string;
+          role?: Database["public"]["Enums"]["user_role"];
+          updated_at?: string;
+        };
+        Update: {
+          account_status?: Database["public"]["Enums"]["account_status"];
+          auth_user_id?: string;
+          avatar_url?: string | null;
+          company_name?: string | null;
+          created_at?: string;
+          email?: string;
+          first_name?: string;
+          id?: string;
+          is_business?: boolean;
+          last_name?: string;
+          phone?: string | null;
+          preferred_language?: string;
+          role?: Database["public"]["Enums"]["user_role"];
           updated_at?: string;
         };
         Relationships: [];
       };
-      audit_logs: {
+      ratings: {
         Row: {
-          id: string;
-          actor_profile_id: string | null;
-          action: string;
-          entity_type: string;
-          entity_id: string | null;
-          metadata: Json | null;
+          comment: string | null;
           created_at: string;
+          id: string;
+          order_id: string;
+          rating: number;
+          reviewed_profile_id: string;
+          reviewer_profile_id: string;
         };
-        // Writable, but only ever via the service-role client
-        // (src/lib/supabase/service.ts) — regular clients have no
-        // client-reachable INSERT policy for this table at all (RLS
-        // defaults to deny). `never` here would also block the one
-        // legitimate writer, which is the actual bug this fixes.
         Insert: {
-          id?: string;
-          actor_profile_id?: string | null;
-          action: string;
-          entity_type: string;
-          entity_id?: string | null;
-          metadata?: Json | null;
+          comment?: string | null;
           created_at?: string;
+          id?: string;
+          order_id: string;
+          rating: number;
+          reviewed_profile_id: string;
+          reviewer_profile_id: string;
         };
-        Update: never;
-        Relationships: [];
+        Update: {
+          comment?: string | null;
+          created_at?: string;
+          id?: string;
+          order_id?: string;
+          rating?: number;
+          reviewed_profile_id?: string;
+          reviewer_profile_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "ratings_order_id_fkey";
+            columns: ["order_id"];
+            isOneToOne: false;
+            referencedRelation: "orders";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "ratings_reviewed_profile_id_fkey";
+            columns: ["reviewed_profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "ratings_reviewer_profile_id_fkey";
+            columns: ["reviewer_profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      vehicles: {
+        Row: {
+          active: boolean;
+          brand: string;
+          cargo_height_cm: number | null;
+          cargo_length_cm: number | null;
+          cargo_width_cm: number | null;
+          created_at: string;
+          driver_profile_id: string;
+          id: string;
+          max_payload_kg: number | null;
+          model: string;
+          registration_number: string;
+          updated_at: string;
+          vehicle_type: Database["public"]["Enums"]["vehicle_type"];
+        };
+        Insert: {
+          active?: boolean;
+          brand: string;
+          cargo_height_cm?: number | null;
+          cargo_length_cm?: number | null;
+          cargo_width_cm?: number | null;
+          created_at?: string;
+          driver_profile_id: string;
+          id?: string;
+          max_payload_kg?: number | null;
+          model: string;
+          registration_number: string;
+          updated_at?: string;
+          vehicle_type: Database["public"]["Enums"]["vehicle_type"];
+        };
+        Update: {
+          active?: boolean;
+          brand?: string;
+          cargo_height_cm?: number | null;
+          cargo_length_cm?: number | null;
+          cargo_width_cm?: number | null;
+          created_at?: string;
+          driver_profile_id?: string;
+          id?: string;
+          max_payload_kg?: number | null;
+          model?: string;
+          registration_number?: string;
+          updated_at?: string;
+          vehicle_type?: Database["public"]["Enums"]["vehicle_type"];
+        };
+        Relationships: [
+          {
+            foreignKeyName: "vehicles_driver_profile_id_fkey";
+            columns: ["driver_profile_id"];
+            isOneToOne: false;
+            referencedRelation: "driver_profiles";
+            referencedColumns: ["id"];
+          },
+        ];
       };
     };
-    Views: Record<string, never>;
+    Views: {
+      [_ in never]: never;
+    };
     Functions: {
+      approximate_address: { Args: { full_address: string }; Returns: string };
       available_jobs: {
-        Args: Record<PropertyKey, never>;
+        Args: never;
         Returns: {
-          order_id: string;
-          item_title: string;
-          item_category: ItemCategory;
-          driver_payout_czk: number | null;
-          requested_vehicle_type: VehicleType | null;
-          assistance_level: AssistanceLevel;
-          disassembly_required: boolean;
           assembly_required: boolean;
-          requested_date: string | null;
-          requested_time_from: string | null;
-          requested_time_to: string | null;
+          assistance_level: Database["public"]["Enums"]["assistance_level"];
+          destination_area: string;
+          destination_floor: number;
+          destination_has_elevator: boolean;
+          disassembly_required: boolean;
+          driver_payout_czk: number;
           is_flexible: boolean;
-          pickup_area: string | null;
-          pickup_floor: number | null;
-          pickup_has_elevator: boolean | null;
-          destination_area: string | null;
-          destination_floor: number | null;
-          destination_has_elevator: boolean | null;
+          item_category: Database["public"]["Enums"]["item_category"];
+          item_title: string;
+          order_id: string;
           photo_count: number;
+          pickup_area: string;
+          pickup_floor: number;
+          pickup_has_elevator: boolean;
+          requested_date: string;
+          requested_time_from: string;
+          requested_time_to: string;
+          requested_vehicle_type: Database["public"]["Enums"]["vehicle_type"];
         }[];
       };
       create_order: {
+        // The generator doesn't infer nullability for plain (non-DEFAULT)
+        // scalar RPC parameters, but Postgres function params are nullable
+        // unless constrained otherwise — these genuinely accept null (the
+        // function body passes them through nullif()/nullable columns, and
+        // the caller in modules/orders/actions.ts intentionally sends null
+        // for optional fields). Same bug class as the Insert/Relationships
+        // fixes on the hand-written version of this file.
         Args: {
-          p_item_title: string;
-          p_item_category: ItemCategory;
-          p_item_description: string | null;
-          p_external_listing_url: string | null;
-          p_item_count: number;
-          p_estimated_weight_kg: number | null;
-          p_length_cm: number | null;
-          p_width_cm: number | null;
-          p_height_cm: number | null;
-          p_requested_vehicle_type: VehicleType;
-          p_assistance_level: AssistanceLevel;
-          p_disassembly_required: boolean;
           p_assembly_required: boolean;
+          p_assistance_level: Database["public"]["Enums"]["assistance_level"];
+          p_customer_price_czk: number;
+          p_destination: Json;
+          p_disassembly_required: boolean;
+          p_driver_payout_czk: number;
+          p_estimated_weight_kg: number | null;
+          p_external_listing_url: string | null;
+          p_height_cm: number | null;
+          p_is_flexible: boolean;
+          p_item_category: Database["public"]["Enums"]["item_category"];
+          p_item_count: number;
+          p_item_description: string | null;
+          p_item_title: string;
+          p_length_cm: number | null;
+          p_pickup: Json;
+          p_platform_fee_czk: number;
+          p_pricing_breakdown: Json;
           p_requested_date: string | null;
           p_requested_time_from: string | null;
           p_requested_time_to: string | null;
-          p_is_flexible: boolean;
-          p_customer_price_czk: number;
-          p_driver_payout_czk: number;
-          p_platform_fee_czk: number;
-          p_pricing_breakdown: Json;
-          p_pickup: Json;
-          p_destination: Json;
+          p_requested_vehicle_type: Database["public"]["Enums"]["vehicle_type"];
+          p_width_cm: number | null;
         };
         Returns: string;
       };
+      current_profile_id: { Args: never; Returns: string };
+      is_admin: { Args: never; Returns: boolean };
+      is_driver: { Args: never; Returns: boolean };
+      is_order_participant: {
+        Args: { target_order_id: string };
+        Returns: boolean;
+      };
+      is_valid_order_transition: {
+        Args: {
+          p_from: Database["public"]["Enums"]["order_status"];
+          p_to: Database["public"]["Enums"]["order_status"];
+        };
+        Returns: boolean;
+      };
     };
     Enums: {
-      user_role: UserRole;
-      account_status: AccountStatus;
-      verification_status: VerificationStatus;
-      vehicle_type: VehicleType;
-      assistance_level: AssistanceLevel;
-      item_category: ItemCategory;
-      order_status: OrderStatus;
-      location_type: LocationType;
-      image_type: ImageType;
-      document_type: DocumentType;
-      payment_status: PaymentStatus;
-      payout_status: PayoutStatus;
+      account_status: "active" | "suspended" | "deleted";
+      assistance_level:
+        "driver_only" | "driver_helps" | "driver_plus_one" | "driver_plus_two";
+      document_type:
+        | "id_card"
+        | "drivers_license"
+        | "vehicle_registration"
+        | "business_license"
+        | "other";
+      image_type:
+        | "item_reference"
+        | "pickup_condition"
+        | "damage"
+        | "delivery_condition"
+        | "proof_of_delivery";
+      item_category:
+        | "sofa"
+        | "bed"
+        | "wardrobe"
+        | "table"
+        | "chair"
+        | "appliance"
+        | "electronics"
+        | "sports_equipment"
+        | "office_equipment"
+        | "boxes"
+        | "other";
+      location_type: "pickup" | "destination";
+      order_status:
+        | "draft"
+        | "submitted"
+        | "awaiting_driver"
+        | "driver_assigned"
+        | "driver_on_the_way"
+        | "arrived_at_pickup"
+        | "item_picked_up"
+        | "in_transit"
+        | "arrived_at_destination"
+        | "delivered"
+        | "completed"
+        | "cancelled_by_customer"
+        | "cancelled_by_driver"
+        | "cancelled_by_admin"
+        | "disputed";
+      payment_status: "pending" | "paid" | "failed" | "refunded";
+      payout_status: "pending" | "paid" | "held" | "failed";
+      user_role: "customer" | "driver" | "admin";
+      vehicle_type: "personal_car" | "estate_car" | "small_van" | "large_van";
+      verification_status: "unverified" | "pending" | "verified" | "rejected";
     };
-    CompositeTypes: Record<string, never>;
+    CompositeTypes: {
+      [_ in never]: never;
+    };
   };
 };
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">;
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">];
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R;
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R;
+      }
+      ? R
+      : never
+    : never;
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I;
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I;
+      }
+      ? I
+      : never
+    : never;
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U;
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U;
+      }
+      ? U
+      : never
+    : never;
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    keyof DefaultSchema["Enums"] | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never) = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never;
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    keyof DefaultSchema["CompositeTypes"] | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never) = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never;
+
+export const Constants = {
+  public: {
+    Enums: {
+      account_status: ["active", "suspended", "deleted"],
+      assistance_level: [
+        "driver_only",
+        "driver_helps",
+        "driver_plus_one",
+        "driver_plus_two",
+      ],
+      document_type: [
+        "id_card",
+        "drivers_license",
+        "vehicle_registration",
+        "business_license",
+        "other",
+      ],
+      image_type: [
+        "item_reference",
+        "pickup_condition",
+        "damage",
+        "delivery_condition",
+        "proof_of_delivery",
+      ],
+      item_category: [
+        "sofa",
+        "bed",
+        "wardrobe",
+        "table",
+        "chair",
+        "appliance",
+        "electronics",
+        "sports_equipment",
+        "office_equipment",
+        "boxes",
+        "other",
+      ],
+      location_type: ["pickup", "destination"],
+      order_status: [
+        "draft",
+        "submitted",
+        "awaiting_driver",
+        "driver_assigned",
+        "driver_on_the_way",
+        "arrived_at_pickup",
+        "item_picked_up",
+        "in_transit",
+        "arrived_at_destination",
+        "delivered",
+        "completed",
+        "cancelled_by_customer",
+        "cancelled_by_driver",
+        "cancelled_by_admin",
+        "disputed",
+      ],
+      payment_status: ["pending", "paid", "failed", "refunded"],
+      payout_status: ["pending", "paid", "held", "failed"],
+      user_role: ["customer", "driver", "admin"],
+      vehicle_type: ["personal_car", "estate_car", "small_van", "large_van"],
+      verification_status: ["unverified", "pending", "verified", "rejected"],
+    },
+  },
+} as const;
+
+// Convenience aliases used throughout the app (modules/pricing,
+// modules/orders, ...) — re-exported from the generated Enums rather than
+// duplicated as literal unions, so they can never drift from the real schema.
+export type UserRole = Database["public"]["Enums"]["user_role"];
+export type AccountStatus = Database["public"]["Enums"]["account_status"];
+export type VerificationStatus = Database["public"]["Enums"]["verification_status"];
+export type VehicleType = Database["public"]["Enums"]["vehicle_type"];
+export type AssistanceLevel = Database["public"]["Enums"]["assistance_level"];
+export type ItemCategory = Database["public"]["Enums"]["item_category"];
+export type OrderStatus = Database["public"]["Enums"]["order_status"];
+export type LocationType = Database["public"]["Enums"]["location_type"];
+export type ImageType = Database["public"]["Enums"]["image_type"];
+export type DocumentType = Database["public"]["Enums"]["document_type"];
+export type PaymentStatus = Database["public"]["Enums"]["payment_status"];
+export type PayoutStatus = Database["public"]["Enums"]["payout_status"];

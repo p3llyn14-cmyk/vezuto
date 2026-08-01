@@ -42,3 +42,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 supabase/testing/*.log
+
+# supabase CLI local state (project link, cached versions) — machine-specific
+supabase/.temp
