@@ -1,5 +1,6 @@
 import "server-only";
-import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
+import { NextResponse, type NextRequest } from "next/server";
 
 // Temporary diagnostic route — deployed to check why production auth was
 // failing despite the exact same credentials working outside Vercel.
@@ -20,5 +21,24 @@ export async function GET() {
     serviceKeyLength: service.length,
     serviceKeyPresent: service.length > 0,
     serviceKeyHasWhitespace: /\s/.test(service),
+  });
+}
+
+// Temporary — mirrors exactly what loginAction does, but returns the real
+// Supabase error instead of the app's generic "wrong email or password"
+// message that was swallowing whatever the actual cause is.
+export async function POST(req: NextRequest) {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
+  const { email, password } = await req.json();
+
+  const supabase = createClient(url, anon);
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+  return NextResponse.json({
+    hasSession: !!data?.session,
+    errorMessage: error?.message ?? null,
+    errorStatus: error?.status ?? null,
+    errorCode: (error as { code?: string } | null)?.code ?? null,
   });
 }
