@@ -7,16 +7,22 @@ import { NextResponse, type NextRequest } from "next/server";
 // Never exposes secret values, only lengths/prefixes, and only for the two
 // vars that are inherently public anyway (URL, anon key) plus a presence
 // check for the service role key. Remove once the mismatch is found.
+const REAL_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InljaXhiZXBpdWtqY2JwaHZyeHRhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1ODQ5MzMsImV4cCI6MjEwMTE2MDkzM30.eqdpYBA3LPyM-ECfJfmsbFpPFdA4bXv_0Rzu4gJqe-c";
+
 export async function GET() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
   const service = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
 
+  // Boolean-only comparison — no secret substring anywhere in this response
+  // body, so if Vercel is redacting on output-content-match, this proves it
+  // either way: matchesRealValue tells us if process.env is genuinely
+  // correct at rest, independent of whatever happens when it's echoed.
   return NextResponse.json({
     url,
     anonKeyLength: anon.length,
-    anonKeyStart: anon.slice(0, 25),
-    anonKeyEnd: anon.slice(-15),
+    anonKeyMatchesRealValue: anon === REAL_ANON_KEY,
     anonKeyHasWhitespace: /\s/.test(anon),
     serviceKeyLength: service.length,
     serviceKeyPresent: service.length > 0,
