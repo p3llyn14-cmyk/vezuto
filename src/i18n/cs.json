@@ -1,0 +1,294 @@
+{
+  "brand": {
+    "name": "VezuTo",
+    "tagline": "Přeprava věcí mezi lidmi v Praze"
+  },
+  "nav": {
+    "howItWorks": "Jak to funguje",
+    "forDrivers": "Pro řidiče",
+    "login": "Přihlásit se",
+    "register": "Registrovat se",
+    "newOrder": "Zadat přepravu"
+  },
+  "home": {
+    "heroTitle": "Koupili jste něco velkého? My to přivezeme.",
+    "heroSubtitle": "Sedačku z Facebook Marketplace, skříň z Bazoše, nábytek z IKEA. Zadejte adresy, řidič v okolí přijme zakázku a věc doveze až k vám.",
+    "ctaPrimary": "Zadat přepravu",
+    "ctaSecondary": "Chci vozit jako řidič",
+    "trustNote": "Zatím jen v Praze. Ověření řidiči, hodnocení a fotodokumentace u každé zakázky.",
+    "categoriesTitle": "Co pro vás převezeme",
+    "categories": {
+      "sofa": "Pohovka",
+      "wardrobe": "Skříň",
+      "appliance": "Domácí spotřebič",
+      "furniture": "Nábytek z IKEA",
+      "washingMachine": "Pračka",
+      "gym": "Fitness vybavení",
+      "office": "Kancelářské vybavení",
+      "other": "Cokoliv většího"
+    },
+    "howItWorksTitle": "Jak to funguje",
+    "steps": {
+      "step1Title": "Zadáte přepravu",
+      "step1Body": "Popíšete věc, nahrajete fotku, zadáte adresu vyzvednutí a doručení.",
+      "step2Title": "Řidič přijme zakázku",
+      "step2Body": "Dostupný řidič v okolí zakázku přijme a domluví se s vámi na detailech.",
+      "step3Title": "Věc dorazí k vám",
+      "step3Body": "Sledujete stav zakázky, komunikujete v chatu a po doručení řidiče ohodnotíte."
+    },
+    "forWhomTitle": "Pro koho je VezuTo",
+    "forCustomer": {
+      "title": "Potřebujete něco převézt",
+      "body": "Koupili jste nábytek přes inzerát nebo v IKEA a nemáte jak ho odvézt."
+    },
+    "forDriver": {
+      "title": "Máte auto nebo sílu",
+      "body": "Vezmete zakázky ve svém okolí a přivyděláte si s vlastním vozem nebo bez něj."
+    }
+  },
+  "footer": {
+    "rights": "Všechna práva vyhrazena.",
+    "praguePilot": "Pilotní provoz v Praze."
+  },
+  "auth": {
+    "loginTitle": "Přihlášení",
+    "loginSubtitle": "Vítejte zpět.",
+    "registerTitle": "Registrace",
+    "registerSubtitle": "Založte si účet a začněte za pár minut.",
+    "backHome": "Zpět na hlavní stránku",
+    "fields": {
+      "role": "Chci",
+      "roleCustomer": "Něco převézt",
+      "roleCustomerHint": "Zákazník — zadávám přepravy",
+      "roleDriver": "Vozit a vydělávat",
+      "roleDriverHint": "Řidič — přijímám zakázky",
+      "firstName": "Jméno",
+      "lastName": "Příjmení",
+      "email": "E-mail",
+      "phone": "Telefon",
+      "password": "Heslo",
+      "passwordConfirm": "Heslo znovu"
+    },
+    "registerSubmit": "Vytvořit účet",
+    "loginSubmit": "Přihlásit se",
+    "haveAccount": "Už máte účet?",
+    "noAccount": "Ještě nemáte účet?",
+    "logout": "Odhlásit se"
+  },
+  "orders": {
+    "newOrderTitle": "Nová přeprava",
+    "itemCategories": {
+      "sofa": "Pohovka",
+      "bed": "Postel",
+      "wardrobe": "Skříň",
+      "table": "Stůl",
+      "chair": "Židle",
+      "appliance": "Domácí spotřebič",
+      "electronics": "Elektronika",
+      "sports_equipment": "Sportovní vybavení",
+      "office_equipment": "Kancelářské vybavení",
+      "boxes": "Krabice",
+      "other": "Jiný předmět"
+    },
+    "vehicleTypes": {
+      "personal_car": "Osobní auto",
+      "estate_car": "Kombi",
+      "small_van": "Malá dodávka",
+      "large_van": "Velká dodávka"
+    },
+    "assistanceLevels": {
+      "driver_only": "Pouze řidič",
+      "driver_helps": "Řidič pomáhá s nošením",
+      "driver_plus_one": "Řidič + 1 pomocník",
+      "driver_plus_two": "Řidič + 2 pomocníci"
+    },
+    "timingOptions": {
+      "asap": "Co nejdříve",
+      "specific_date": "Konkrétní datum",
+      "flexible": "Flexibilní termín"
+    },
+    "steps": {
+      "item": {
+        "title": "Co se převáží",
+        "itemTitle": "Název věci",
+        "itemTitlePlaceholder": "např. Rohová sedačka",
+        "itemCategory": "Kategorie",
+        "itemDescription": "Popis (nepovinné)",
+        "externalListingUrl": "Odkaz na inzerát (nepovinné)",
+        "itemCount": "Počet kusů",
+        "estimatedWeightKg": "Přibližná hmotnost (kg)",
+        "dimensions": "Přibližné rozměry (cm)",
+        "length": "Délka",
+        "width": "Šířka",
+        "height": "Výška",
+        "photos": "Fotografie (nepovinné, max 8)"
+      },
+      "location": {
+        "fullAddress": "Adresa",
+        "floor": "Patro",
+        "hasElevator": "Výtah v budově",
+        "parkingNotes": "Poznámka k parkování (nepovinné)",
+        "contactName": "Kontaktní osoba",
+        "contactPhone": "Telefon",
+        "notes": "Poznámka (nepovinné)"
+      },
+      "pickupTitle": "Vyzvednutí",
+      "destinationTitle": "Doručení",
+      "schedule": {
+        "title": "Termín",
+        "timing": "Kdy",
+        "date": "Datum",
+        "timeFrom": "Čas od",
+        "timeTo": "Čas do"
+      },
+      "assistance": {
+        "title": "Potřebná pomoc",
+        "vehicleType": "Typ vozidla",
+        "assistanceLevel": "Úroveň pomoci",
+        "disassembly": "Potřeba demontáž",
+        "assembly": "Potřeba montáž"
+      },
+      "recap": {
+        "title": "Rekapitulace",
+        "route": "Trasa",
+        "distanceEstimate": "Odhad vzdálenosti a času",
+        "priceBreakdown": "Rozpis ceny",
+        "base": "Základní cena",
+        "distanceFee": "Za vzdálenost",
+        "durationFee": "Za čas jízdy",
+        "vehicleSurcharge": "Příplatek za vozidlo",
+        "assistanceSurcharge": "Příplatek za pomoc",
+        "floorSurcharge": "Příplatek za patro bez výtahu",
+        "expressSurcharge": "Příplatek za expresní termín",
+        "minimumNote": "Uplatněna minimální cena objednávky.",
+        "total": "Celková cena",
+        "confirm": "Odeslat objednávku",
+        "estimating": "Počítám cenu…"
+      }
+    },
+    "next": "Pokračovat",
+    "back": "Zpět",
+    "orderCreated": "Objednávka byla úspěšně odeslána.",
+    "statusLabels": {
+      "draft": "Koncept",
+      "submitted": "Odesláno",
+      "awaiting_driver": "Čeká na řidiče",
+      "driver_assigned": "Řidič přiřazen",
+      "driver_on_the_way": "Řidič je na cestě",
+      "arrived_at_pickup": "Řidič na místě vyzvednutí",
+      "item_picked_up": "Věc vyzvednuta",
+      "in_transit": "Na cestě",
+      "arrived_at_destination": "Řidič na místě doručení",
+      "delivered": "Doručeno",
+      "completed": "Dokončeno",
+      "cancelled_by_customer": "Zrušeno zákazníkem",
+      "cancelled_by_driver": "Zrušeno řidičem",
+      "cancelled_by_admin": "Zrušeno administrátorem",
+      "disputed": "Řeší se reklamace"
+    }
+  },
+  "drivers": {
+    "availableJobsTitle": "Dostupné zakázky",
+    "availableJobsEmpty": "Momentálně nejsou k dispozici žádné zakázky.",
+    "myJobsTitle": "Moje zakázky",
+    "myJobsEmpty": "Zatím jste nepřijali žádnou zakázku.",
+    "accept": "Přijmout zakázku",
+    "reward": "Odměna",
+    "pickupArea": "Vyzvednutí",
+    "destinationArea": "Doručení",
+    "helpersLabel": "Pomoc",
+    "photosLabel": "fotek",
+    "advanceStatus": {
+      "driver_assigned": "Jedu k vyzvednutí",
+      "driver_on_the_way": "Dorazil jsem na místo vyzvednutí",
+      "arrived_at_pickup": "Věc vyzvednuta",
+      "item_picked_up": "Jedu doručit",
+      "in_transit": "Dorazil jsem na místo doručení",
+      "arrived_at_destination": "Doručeno"
+    },
+    "cancel": "Zrušit zakázku",
+    "cancelConfirm": "Opravdu chcete tuto zakázku zrušit?",
+    "photoUpload": {
+      "title": "Fotodokumentace",
+      "imageType": "Typ fotografie",
+      "upload": "Nahrát fotografii",
+      "types": {
+        "pickup_condition": "Stav při vyzvednutí",
+        "damage": "Poškození",
+        "delivery_condition": "Stav při doručení",
+        "proof_of_delivery": "Potvrzení doručení"
+      }
+    },
+    "backToJobs": "Zpět na zakázky"
+  },
+  "chat": {
+    "title": "Zprávy",
+    "placeholder": "Napište zprávu…",
+    "send": "Odeslat",
+    "empty": "Zatím žádné zprávy."
+  },
+  "reviews": {
+    "confirmDelivery": "Potvrdit doručení",
+    "title": "Hodnocení řidiče",
+    "rateTitle": "Jak jste byli spokojeni s řidičem?",
+    "commentPlaceholder": "Komentář (nepovinné)",
+    "submit": "Odeslat hodnocení",
+    "submitted": "Děkujeme za hodnocení.",
+    "yourRating": "Vaše hodnocení"
+  },
+  "payments": {
+    "payNow": "Zaplatit",
+    "paid": "Zaplaceno",
+    "refunded": "Platba vrácena",
+    "success": "Platba proběhla úspěšně. Změna se projeví za pár vteřin.",
+    "cancelled": "Platba byla zrušena, zkuste to prosím znovu."
+  },
+  "admin": {
+    "dashboardTitle": "Přehled",
+    "stats": {
+      "newOrders": "Nové objednávky",
+      "activeOrders": "Aktivní objednávky",
+      "completedOrders": "Dokončené objednávky",
+      "cancelledOrders": "Zrušené objednávky",
+      "totalOrderValue": "Celková hodnota objednávek",
+      "platformRevenue": "Příjem platformy",
+      "activeDrivers": "Aktivní řidiči"
+    },
+    "ordersNav": "Objednávky",
+    "driversNav": "Řidiči",
+    "ordersTitle": "Všechny objednávky",
+    "filters": {
+      "status": "Stav",
+      "allStatuses": "Všechny stavy",
+      "dateFrom": "Od data",
+      "dateTo": "Do data",
+      "minPrice": "Cena od",
+      "maxPrice": "Cena do",
+      "apply": "Filtrovat"
+    },
+    "actions": {
+      "title": "Administrátorské akce",
+      "assignDriver": "Přiřadit řidiče",
+      "assignDriverPlaceholder": "ID profilu řidiče",
+      "assign": "Přiřadit",
+      "changeStatus": "Změnit stav",
+      "change": "Změnit",
+      "changePrice": "Změnit cenu (Kč)",
+      "refund": "Vrátit platbu",
+      "refundConfirm": "Opravdu chcete vrátit platbu za tuto objednávku?"
+    },
+    "driversTitle": "Řidiči k ověření",
+    "verificationStatus": {
+      "unverified": "Neověřen",
+      "pending": "Čeká na ověření",
+      "verified": "Ověřen",
+      "rejected": "Zamítnut"
+    },
+    "documents": "Dokumenty",
+    "noDocuments": "Žádné dokumenty.",
+    "approve": "Schválit",
+    "reject": "Zamítnout",
+    "suspendUser": "Zablokovat uživatele",
+    "suspendConfirm": "Opravdu chcete zablokovat tohoto uživatele?"
+  }
+}

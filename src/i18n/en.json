@@ -1,0 +1,294 @@
+{
+  "brand": {
+    "name": "VezuTo",
+    "tagline": "Peer-to-peer transport in Prague"
+  },
+  "nav": {
+    "howItWorks": "How it works",
+    "forDrivers": "For drivers",
+    "login": "Log in",
+    "register": "Sign up",
+    "newOrder": "Request a pickup"
+  },
+  "home": {
+    "heroTitle": "Bought something big? We'll bring it home.",
+    "heroSubtitle": "A sofa from a marketplace listing, a wardrobe from a classifieds site, furniture from IKEA. Enter the addresses, a nearby driver accepts the job, and your item gets delivered.",
+    "ctaPrimary": "Request a pickup",
+    "ctaSecondary": "Drive and earn",
+    "trustNote": "Prague only for now. Verified drivers, ratings, and photo documentation on every order.",
+    "categoriesTitle": "What we transport",
+    "categories": {
+      "sofa": "Sofa",
+      "wardrobe": "Wardrobe",
+      "appliance": "Home appliance",
+      "furniture": "IKEA furniture",
+      "washingMachine": "Washing machine",
+      "gym": "Gym equipment",
+      "office": "Office equipment",
+      "other": "Anything large"
+    },
+    "howItWorksTitle": "How it works",
+    "steps": {
+      "step1Title": "Create an order",
+      "step1Body": "Describe the item, upload a photo, set the pickup and delivery address.",
+      "step2Title": "A driver accepts",
+      "step2Body": "An available nearby driver accepts the job and coordinates details with you.",
+      "step3Title": "It arrives",
+      "step3Body": "Track the order status, chat with the driver, and rate them once it's delivered."
+    },
+    "forWhomTitle": "Who VezuTo is for",
+    "forCustomer": {
+      "title": "You need something moved",
+      "body": "You bought furniture online or at IKEA and have no way to get it home."
+    },
+    "forDriver": {
+      "title": "You have a vehicle or muscle",
+      "body": "Accept jobs near you and earn extra income, with or without a vehicle."
+    }
+  },
+  "footer": {
+    "rights": "All rights reserved.",
+    "praguePilot": "Pilot running in Prague."
+  },
+  "auth": {
+    "loginTitle": "Log in",
+    "loginSubtitle": "Welcome back.",
+    "registerTitle": "Sign up",
+    "registerSubtitle": "Create an account in a couple of minutes.",
+    "backHome": "Back to home",
+    "fields": {
+      "role": "I want to",
+      "roleCustomer": "Move something",
+      "roleCustomerHint": "Customer — I request pickups",
+      "roleDriver": "Drive and earn",
+      "roleDriverHint": "Driver — I accept jobs",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "phone": "Phone",
+      "password": "Password",
+      "passwordConfirm": "Confirm password"
+    },
+    "registerSubmit": "Create account",
+    "loginSubmit": "Log in",
+    "haveAccount": "Already have an account?",
+    "noAccount": "Don't have an account yet?",
+    "logout": "Log out"
+  },
+  "orders": {
+    "newOrderTitle": "New pickup",
+    "itemCategories": {
+      "sofa": "Sofa",
+      "bed": "Bed",
+      "wardrobe": "Wardrobe",
+      "table": "Table",
+      "chair": "Chair",
+      "appliance": "Home appliance",
+      "electronics": "Electronics",
+      "sports_equipment": "Sports equipment",
+      "office_equipment": "Office equipment",
+      "boxes": "Boxes",
+      "other": "Other item"
+    },
+    "vehicleTypes": {
+      "personal_car": "Personal car",
+      "estate_car": "Estate car",
+      "small_van": "Small van",
+      "large_van": "Large van"
+    },
+    "assistanceLevels": {
+      "driver_only": "Driver only",
+      "driver_helps": "Driver helps carry",
+      "driver_plus_one": "Driver + 1 helper",
+      "driver_plus_two": "Driver + 2 helpers"
+    },
+    "timingOptions": {
+      "asap": "As soon as possible",
+      "specific_date": "Specific date",
+      "flexible": "Flexible date"
+    },
+    "steps": {
+      "item": {
+        "title": "What's being moved",
+        "itemTitle": "Item name",
+        "itemTitlePlaceholder": "e.g. Corner sofa",
+        "itemCategory": "Category",
+        "itemDescription": "Description (optional)",
+        "externalListingUrl": "Listing link (optional)",
+        "itemCount": "Number of pieces",
+        "estimatedWeightKg": "Approx. weight (kg)",
+        "dimensions": "Approx. dimensions (cm)",
+        "length": "Length",
+        "width": "Width",
+        "height": "Height",
+        "photos": "Photos (optional, up to 8)"
+      },
+      "location": {
+        "fullAddress": "Address",
+        "floor": "Floor",
+        "hasElevator": "Building has an elevator",
+        "parkingNotes": "Parking notes (optional)",
+        "contactName": "Contact person",
+        "contactPhone": "Phone",
+        "notes": "Notes (optional)"
+      },
+      "pickupTitle": "Pickup",
+      "destinationTitle": "Delivery",
+      "schedule": {
+        "title": "Timing",
+        "timing": "When",
+        "date": "Date",
+        "timeFrom": "Time from",
+        "timeTo": "Time to"
+      },
+      "assistance": {
+        "title": "Help needed",
+        "vehicleType": "Vehicle type",
+        "assistanceLevel": "Assistance level",
+        "disassembly": "Needs disassembly",
+        "assembly": "Needs assembly"
+      },
+      "recap": {
+        "title": "Review",
+        "route": "Route",
+        "distanceEstimate": "Distance & time estimate",
+        "priceBreakdown": "Price breakdown",
+        "base": "Base fare",
+        "distanceFee": "Distance",
+        "durationFee": "Drive time",
+        "vehicleSurcharge": "Vehicle surcharge",
+        "assistanceSurcharge": "Assistance surcharge",
+        "floorSurcharge": "No-elevator floor surcharge",
+        "expressSurcharge": "Express surcharge",
+        "minimumNote": "Minimum order price applied.",
+        "total": "Total price",
+        "confirm": "Submit order",
+        "estimating": "Calculating price…"
+      }
+    },
+    "next": "Continue",
+    "back": "Back",
+    "orderCreated": "Your order has been submitted.",
+    "statusLabels": {
+      "draft": "Draft",
+      "submitted": "Submitted",
+      "awaiting_driver": "Awaiting a driver",
+      "driver_assigned": "Driver assigned",
+      "driver_on_the_way": "Driver on the way",
+      "arrived_at_pickup": "Driver at pickup",
+      "item_picked_up": "Item picked up",
+      "in_transit": "In transit",
+      "arrived_at_destination": "Driver at destination",
+      "delivered": "Delivered",
+      "completed": "Completed",
+      "cancelled_by_customer": "Cancelled by customer",
+      "cancelled_by_driver": "Cancelled by driver",
+      "cancelled_by_admin": "Cancelled by admin",
+      "disputed": "Under dispute"
+    }
+  },
+  "drivers": {
+    "availableJobsTitle": "Available jobs",
+    "availableJobsEmpty": "No jobs are available right now.",
+    "myJobsTitle": "My jobs",
+    "myJobsEmpty": "You haven't accepted any jobs yet.",
+    "accept": "Accept job",
+    "reward": "Reward",
+    "pickupArea": "Pickup",
+    "destinationArea": "Delivery",
+    "helpersLabel": "Help",
+    "photosLabel": "photos",
+    "advanceStatus": {
+      "driver_assigned": "Heading to pickup",
+      "driver_on_the_way": "Arrived at pickup",
+      "arrived_at_pickup": "Item picked up",
+      "item_picked_up": "Heading to delivery",
+      "in_transit": "Arrived at destination",
+      "arrived_at_destination": "Delivered"
+    },
+    "cancel": "Cancel job",
+    "cancelConfirm": "Are you sure you want to cancel this job?",
+    "photoUpload": {
+      "title": "Photo documentation",
+      "imageType": "Photo type",
+      "upload": "Upload photo",
+      "types": {
+        "pickup_condition": "Condition at pickup",
+        "damage": "Damage",
+        "delivery_condition": "Condition at delivery",
+        "proof_of_delivery": "Proof of delivery"
+      }
+    },
+    "backToJobs": "Back to jobs"
+  },
+  "chat": {
+    "title": "Messages",
+    "placeholder": "Type a message…",
+    "send": "Send",
+    "empty": "No messages yet."
+  },
+  "reviews": {
+    "confirmDelivery": "Confirm delivery",
+    "title": "Rate the driver",
+    "rateTitle": "How satisfied were you with the driver?",
+    "commentPlaceholder": "Comment (optional)",
+    "submit": "Submit rating",
+    "submitted": "Thanks for your feedback.",
+    "yourRating": "Your rating"
+  },
+  "payments": {
+    "payNow": "Pay now",
+    "paid": "Paid",
+    "refunded": "Payment refunded",
+    "success": "Payment succeeded. The change will show up in a few seconds.",
+    "cancelled": "Payment was cancelled, please try again."
+  },
+  "admin": {
+    "dashboardTitle": "Overview",
+    "stats": {
+      "newOrders": "New orders",
+      "activeOrders": "Active orders",
+      "completedOrders": "Completed orders",
+      "cancelledOrders": "Cancelled orders",
+      "totalOrderValue": "Total order value",
+      "platformRevenue": "Platform revenue",
+      "activeDrivers": "Active drivers"
+    },
+    "ordersNav": "Orders",
+    "driversNav": "Drivers",
+    "ordersTitle": "All orders",
+    "filters": {
+      "status": "Status",
+      "allStatuses": "All statuses",
+      "dateFrom": "From date",
+      "dateTo": "To date",
+      "minPrice": "Min price",
+      "maxPrice": "Max price",
+      "apply": "Filter"
+    },
+    "actions": {
+      "title": "Admin actions",
+      "assignDriver": "Assign driver",
+      "assignDriverPlaceholder": "Driver profile ID",
+      "assign": "Assign",
+      "changeStatus": "Change status",
+      "change": "Change",
+      "changePrice": "Change price (CZK)",
+      "refund": "Refund payment",
+      "refundConfirm": "Are you sure you want to refund this order?"
+    },
+    "driversTitle": "Drivers to review",
+    "verificationStatus": {
+      "unverified": "Unverified",
+      "pending": "Pending review",
+      "verified": "Verified",
+      "rejected": "Rejected"
+    },
+    "documents": "Documents",
+    "noDocuments": "No documents.",
+    "approve": "Approve",
+    "reject": "Reject",
+    "suspendUser": "Suspend user",
+    "suspendConfirm": "Are you sure you want to suspend this user?"
+  }
+}
