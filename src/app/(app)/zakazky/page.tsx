@@ -5,7 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getDictionary } from "@/i18n";
 import { formatCzk, formatDate } from "@/lib/format";
 import { requireDriverProfile } from "@/modules/auth/queries";
-import { listAvailableJobs, listDriverOrders } from "@/modules/drivers/queries";
+import { ShareLocationButton } from "@/modules/drivers/components/share-location-button";
+import {
+  getDriverLocationStatus,
+  listAvailableJobs,
+  listDriverOrders,
+} from "@/modules/drivers/queries";
 import { getOrderStatusBadgeVariant } from "@/modules/orders/status-badge";
 
 export const metadata: Metadata = { title: "Zakázky — VezuTo" };
@@ -13,9 +18,10 @@ export const metadata: Metadata = { title: "Zakázky — VezuTo" };
 export default async function JobsPage() {
   const profile = await requireDriverProfile("/zakazky");
   const dict = getDictionary();
-  const [availableJobs, myOrders] = await Promise.all([
+  const [availableJobs, myOrders, locationUpdatedAt] = await Promise.all([
     listAvailableJobs(),
     listDriverOrders(profile.id),
+    getDriverLocationStatus(profile.id),
   ]);
   const activeOrders = myOrders.filter(
     (o) =>
@@ -59,9 +65,12 @@ export default async function JobsPage() {
       )}
 
       <section>
-        <h1 className="mb-4 text-xl font-semibold tracking-tight">
-          {dict.drivers.availableJobsTitle}
-        </h1>
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <h1 className="text-xl font-semibold tracking-tight">
+            {dict.drivers.availableJobsTitle}
+          </h1>
+          <ShareLocationButton lastSharedAt={locationUpdatedAt} />
+        </div>
         {availableJobs.length === 0 ? (
           <p className="text-muted-foreground text-sm">
             {dict.drivers.availableJobsEmpty}
@@ -76,6 +85,12 @@ export default async function JobsPage() {
                       <CardTitle className="text-base">{job.item_title}</CardTitle>
                       <p className="text-muted-foreground mt-1 text-xs">
                         {job.pickup_area} → {job.destination_area}
+                        {job.distance_km !== null && (
+                          <span className="text-primary font-medium">
+                            {" "}
+                            · {job.distance_km} km od vás
+                          </span>
+                        )}
                       </p>
                     </div>
                     {job.driver_payout_czk !== null && (

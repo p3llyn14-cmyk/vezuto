@@ -110,6 +110,12 @@ Supabase Auth přes [`@supabase/ssr`](https://supabase.com/docs/guides/auth/serv
 - **Změny stavů a fotodokumentace** se po přijetí zobrazí přímo na `/objednavky/[id]` (sdílená stránka s detailem pro zákazníka) — když je přihlášený uživatel přiřazený řidič dané zakázky, přibude posun stavu (`driver_assigned → … → delivered`, lineární šťastná cesta), zrušení (jen dokud nebyla věc vyzvednuta) a upload fotek podle typu (stav při vyzvednutí, poškození, stav při doručení, potvrzení doručení). Validace přípustných přechodů je v DB triggeru (Fáze 3), akce jen posílá `UPDATE` a nechává databázi rozhodnout.
 - Žádné nové migrace pro tuto fázi — celá řidičská část stojí na mechanismech (RLS, `available_jobs()`, atomický claim) už otestovaných ve Fázi 3.
 
+## Chytré párování podle vzdálenosti
+
+`available_jobs()` (`supabase/migrations/20260802140000_driver_location_matching.sql`) teď řadí pool zakázek podle vzdálenosti od řidiče, ne jen od nejnovější. Řidič klikne na "Sdílet polohu" na `/zakazky` (`ShareLocationButton`, prohlížečové Geolocation API) → `updateDriverLocationAction` uloží `current_latitude`/`current_longitude` do `driver_profiles`. `available_jobs()` spočítá vzdálenost k místu vyzvednutí přes haversine vzorec (`haversine_km()`) a vrátí ji jako `distance_km` — nikdy ale nevrací syrové souřadnice zákazníka, jen výsledné číslo (stejná hranice soukromí jako `approximate_address()`). Bez sdílené polohy nebo bez geokódovaných souřadnic objednávky padá řazení zpět na "nejnovější první".
+
+Adresy se geokódují při vytvoření objednávky (`MapsProvider.geocode()`, `modules/orders/actions.ts`) — `MockMapsProvider` vrací deterministický, zjevně smyšlený bod kolem centra Prahy (žádný Google Maps účet), `GoogleMapsProvider` volá skutečné Geocoding API. **Reálně otestováno proti lokálnímu Postgresu** — smoke test vloží dvě testovací zakázky v různé vzdálenosti od řidičky a ověří správné pořadí i hodnotu `distance_km` (viz `supabase/testing/rls_smoke_test.sql`, sekce 4b).
+
 ## Chat a hodnocení
 
 Chat (`src/modules/chat`) a hodnocení (`src/modules/reviews`) jsou zobrazené přímo na `/objednavky/[id]`, sdílené mezi zákazníkem, přiřazeným řidičem a (později) administrátorem.

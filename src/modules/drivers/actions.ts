@@ -62,6 +62,53 @@ export async function claimOrderAction(orderId: string): Promise<DriverActionSta
   return undefined;
 }
 
+/**
+ * Called from the browser's own Geolocation API (see ShareLocationButton) —
+ * only ever the driver's own coordinates, never trusted beyond "this is
+ * roughly where the reporting browser is right now". available_jobs() only
+ * ever returns a computed distance from this, never the raw lat/lng back to
+ * anyone else (see the RLS/RPC comments in the migration).
+ */
+export async function updateDriverLocationAction(
+  lat: number,
+  lng: number,
+): Promise<DriverActionState> {
+  if (
+    typeof lat !== "number" ||
+    typeof lng !== "number" ||
+    Number.isNaN(lat) ||
+    Number.isNaN(lng) ||
+    lat < -90 ||
+    lat > 90 ||
+    lng < -180 ||
+    lng > 180
+  ) {
+    return { message: "Neplatná poloha." };
+  }
+
+  const profile = await getCurrentProfile();
+  if (!profile || profile.role !== "driver") {
+    return { message: "Pro sdílení polohy musíte být přihlášeni jako řidič." };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("driver_profiles")
+    .update({
+      current_latitude: lat,
+      current_longitude: lng,
+      location_updated_at: new Date().toISOString(),
+    })
+    .eq("profile_id", profile.id);
+
+  if (error) {
+    return { message: "Polohu se nepodařilo uložit." };
+  }
+
+  revalidatePath("/zakazky");
+  return undefined;
+}
+
 export async function advanceOrderStatusAction(
   orderId: string,
 ): Promise<DriverActionState> {

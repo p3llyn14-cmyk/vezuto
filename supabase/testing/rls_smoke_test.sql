@@ -131,6 +131,60 @@ select assert_no_rows_affected(
 );
 
 -- ---------------------------------------------------------------------------
+-- 4b. available_jobs() distance ranking (Fáze "AI matching" follow-up).
+-- Raw inserts need superuser, not the authenticated role/RLS path, since
+-- this is seeding test fixtures rather than exercising the customer flow.
+-- ---------------------------------------------------------------------------
+reset role;
+
+insert into orders (
+  id, customer_profile_id, status, item_title, item_category, item_count,
+  requested_vehicle_type, assistance_level, is_flexible
+) values
+  ('e0000000-0000-4000-8000-000000000010', 'b0000000-0000-4000-8000-000000000001',
+   'awaiting_driver', 'Blízká zakázka', 'sofa', 1, 'personal_car', 'driver_only', true),
+  ('e0000000-0000-4000-8000-000000000011', 'b0000000-0000-4000-8000-000000000001',
+   'awaiting_driver', 'Vzdálená zakázka', 'sofa', 1, 'personal_car', 'driver_only', true);
+
+insert into order_locations (order_id, location_type, full_address, latitude, longitude, contact_name, contact_phone)
+values
+  ('e0000000-0000-4000-8000-000000000010', 'pickup', 'Blízko, Praha 9', 50.1080, 14.4750, 'Test', '+420600000099'),
+  ('e0000000-0000-4000-8000-000000000010', 'destination', 'Cíl, Praha 9', 50.1000, 14.4600, 'Test', '+420600000099'),
+  ('e0000000-0000-4000-8000-000000000011', 'pickup', 'Daleko, Praha 5', 50.0500, 14.3500, 'Test', '+420600000099'),
+  ('e0000000-0000-4000-8000-000000000011', 'destination', 'Cíl2, Praha 5', 50.0400, 14.3400, 'Test', '+420600000099');
+
+update driver_profiles
+  set current_latitude = 50.1073, current_longitude = 14.4740
+  where id = 'c0000000-0000-4000-8000-000000000002'; -- Petra
+
+set role authenticated;
+set request.jwt.claims = '{"sub":"a0000000-0000-4000-8000-000000000003"}'; -- Petra
+
+select test_assert(
+  (select order_id from available_jobs() order by distance_km asc nulls last limit 1)
+    = 'e0000000-0000-4000-8000-000000000010',
+  'available_jobs() řadí bližší zakázku první'
+);
+select test_assert(
+  (select distance_km from available_jobs() where order_id = 'e0000000-0000-4000-8000-000000000010')
+    < (select distance_km from available_jobs() where order_id = 'e0000000-0000-4000-8000-000000000011'),
+  'vzdálenost bližší zakázky je skutečně menší než vzdálenější'
+);
+select test_assert(
+  (select distance_km from available_jobs() where order_id = 'e0000000-0000-4000-8000-000000000010') < 2,
+  'distance_km pro zakázku pár set metrů od řidičky je realisticky malé (< 2 km)'
+);
+
+-- Cleanup — later assertions (admin sees exactly 5 seeded orders) depend on
+-- these two synthetic fixtures being gone again.
+reset role;
+delete from orders where id in (
+  'e0000000-0000-4000-8000-000000000010',
+  'e0000000-0000-4000-8000-000000000011'
+);
+set role authenticated;
+
+-- ---------------------------------------------------------------------------
 -- 5. Field-level rules enforced by the orders_before_update trigger.
 -- ---------------------------------------------------------------------------
 set request.jwt.claims = '{"sub":"a0000000-0000-4000-8000-000000000002"}'; -- Tomáš, now assigned to order 3

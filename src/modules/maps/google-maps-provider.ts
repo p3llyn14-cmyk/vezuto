@@ -1,5 +1,10 @@
 import "server-only";
-import type { DistanceEstimate, MapsProvider } from "./provider.interface";
+import type { Coordinates, DistanceEstimate, MapsProvider } from "./provider.interface";
+
+interface GeocodeResponse {
+  status: string;
+  results: { geometry: { location: { lat: number; lng: number } } }[];
+}
 
 interface DistanceMatrixResponse {
   status: string;
@@ -54,5 +59,21 @@ export class GoogleMapsProvider implements MapsProvider {
       distanceKm: Math.round((element.distance.value / 1000) * 10) / 10,
       durationMin: Math.round((element.duration?.value ?? 0) / 60),
     };
+  }
+
+  async geocode(address: string): Promise<Coordinates | null> {
+    const url = new URL("https://maps.googleapis.com/maps/api/geocode/json");
+    url.searchParams.set("address", address);
+    url.searchParams.set("region", "cz");
+    url.searchParams.set("key", this.apiKey);
+
+    const response = await fetch(url, { cache: "no-store" });
+    if (!response.ok) return null;
+
+    const data = (await response.json()) as GeocodeResponse;
+    const location = data.results?.[0]?.geometry?.location;
+    if (data.status !== "OK" || !location) return null;
+
+    return { lat: location.lat, lng: location.lng };
   }
 }

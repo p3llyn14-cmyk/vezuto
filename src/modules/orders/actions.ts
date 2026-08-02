@@ -116,6 +116,15 @@ export async function createOrderAction(
   const breakdown = await estimateForDraft(draft);
   const supabase = await createClient();
 
+  // Best-effort — a failed/misconfigured geocode just means the order has
+  // no coordinates yet, so it falls back to newest-first in available_jobs()
+  // instead of blocking order creation on a third-party outage.
+  const mapsProvider = getMapsProvider();
+  const [pickupCoords, destinationCoords] = await Promise.all([
+    mapsProvider.geocode(draft.pickup.fullAddress).catch(() => null),
+    mapsProvider.geocode(draft.destination.fullAddress).catch(() => null),
+  ]);
+
   const { data: orderId, error: rpcError } = await supabase.rpc("create_order", {
     p_item_title: draft.itemTitle,
     p_item_category: draft.itemCategory,
@@ -141,8 +150,12 @@ export async function createOrderAction(
     // PriceBreakdown is a plain object of numbers/booleans — genuinely
     // JSON-safe, just missing the index signature Json's type demands.
     p_pricing_breakdown: breakdown as unknown as Json,
-    p_pickup: draft.pickup,
-    p_destination: draft.destination,
+    p_pickup: { ...draft.pickup, lat: pickupCoords?.lat, lng: pickupCoords?.lng },
+    p_destination: {
+      ...draft.destination,
+      lat: destinationCoords?.lat,
+      lng: destinationCoords?.lng,
+    },
   });
 
   if (rpcError || !orderId) {
