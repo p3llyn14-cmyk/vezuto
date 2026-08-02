@@ -1,4 +1,18 @@
+import {
+  Archive,
+  Briefcase,
+  Dumbbell,
+  MapPin,
+  Package,
+  Refrigerator,
+  Sofa,
+  Truck,
+  UserCheck,
+} from "lucide-react";
 import Link from "next/link";
+import { HeroPreview } from "@/components/hero-preview";
+import { SiteFooter } from "@/components/site-footer";
+import { SiteHeader } from "@/components/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,17 +22,28 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
 import { getDictionary } from "@/i18n";
 import { getCurrentProfile } from "@/modules/auth/queries";
+
+const CATEGORY_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  sofa: Sofa,
+  wardrobe: Archive,
+  appliance: Refrigerator,
+  furniture: Package,
+  washingMachine: Refrigerator,
+  gym: Dumbbell,
+  office: Briefcase,
+  other: Package,
+};
+
+const STEP_ICONS = [MapPin, Truck, UserCheck];
 
 export default async function Home() {
   const dict = getDictionary();
   const profile = await getCurrentProfile();
   const primaryCtaHref =
     profile?.role === "customer" ? "/objednavky/nova" : "/registrace";
-  const categories = Object.values(dict.home.categories);
+  const categories = Object.entries(dict.home.categories);
   const steps = [
     dict.home.steps.step1Title,
     dict.home.steps.step2Title,
@@ -36,7 +61,7 @@ export default async function Home() {
     <>
       <SiteHeader />
       <main className="flex-1">
-        <section className="mx-auto max-w-5xl px-4 pt-16 pb-14 sm:px-6 sm:pt-24 sm:pb-20">
+        <section className="mx-auto grid max-w-5xl items-center gap-12 px-4 pt-16 pb-14 sm:px-6 sm:pt-24 sm:pb-20 lg:grid-cols-[1.1fr_0.9fr] lg:gap-8">
           <div className="max-w-2xl">
             <Badge variant="secondary" className="mb-5">
               {dict.footer.praguePilot}
@@ -68,6 +93,9 @@ export default async function Home() {
             </div>
             <p className="text-muted-foreground mt-5 text-sm">{dict.home.trustNote}</p>
           </div>
+          <div className="hidden lg:block">
+            <HeroPreview />
+          </div>
         </section>
 
         <section className="bg-muted/30 border-t py-14">
@@ -76,11 +104,18 @@ export default async function Home() {
               {dict.home.categoriesTitle}
             </h2>
             <div className="mt-4 flex flex-wrap gap-2">
-              {categories.map((category) => (
-                <Badge key={category} variant="outline" className="px-3 py-1.5 text-sm">
-                  {category}
-                </Badge>
-              ))}
+              {categories.map(([key, label]) => {
+                const Icon = CATEGORY_ICONS[key] ?? Package;
+                return (
+                  <span
+                    key={key}
+                    className="bg-background inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-sm shadow-sm"
+                  >
+                    <Icon className="text-primary h-4 w-4" />
+                    {label}
+                  </span>
+                );
+              })}
             </div>
           </div>
         </section>
@@ -91,21 +126,24 @@ export default async function Home() {
               {dict.home.howItWorksTitle}
             </h2>
             <div className="mt-8 grid gap-5 sm:grid-cols-3">
-              {steps.map((step, i) => (
-                <Card key={step.title} className="border-border/70">
-                  <CardHeader>
-                    <span className="text-primary font-mono text-sm tabular-nums">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <CardTitle className="text-lg">{step.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-base leading-relaxed">
-                      {step.body}
-                    </CardDescription>
-                  </CardContent>
-                </Card>
-              ))}
+              {steps.map((step, i) => {
+                const Icon = STEP_ICONS[i] ?? MapPin;
+                return (
+                  <Card key={step.title} className="border-border/70">
+                    <CardHeader>
+                      <div className="bg-primary text-primary-foreground mb-1 flex h-11 w-11 items-center justify-center rounded-full">
+                        <Icon className="h-5 w-5" />
+                      </div>
+                      <CardTitle className="text-lg">{step.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <CardDescription className="text-base leading-relaxed">
+                        {step.body}
+                      </CardDescription>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </div>
         </section>
